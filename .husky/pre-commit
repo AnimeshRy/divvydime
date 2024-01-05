@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "Formatting with Prettier"
+npm run format
+echo "Linting with Eslint"
+npm run lint
