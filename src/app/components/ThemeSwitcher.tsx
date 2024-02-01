@@ -13,6 +13,7 @@ export default function ThemeSwitcher() {
 
   if (!mounted) return null
 
+  console.log('Mounted')
   return (
     <div className="flex gap-4">
       <Button size="sm" variant="flat" onClick={() => setTheme('light')}>
