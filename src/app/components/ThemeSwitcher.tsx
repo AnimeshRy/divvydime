@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
-
-import { Button } from '@nextui-org/button'
+import { RxSun, RxMoon } from 'react-icons/rx'
+import { Button } from '@nextui-org/react'
 
 export default function ThemeSwitcher() {
   const [mounted, setMounted] = useState(false)
@@ -13,14 +13,13 @@ export default function ThemeSwitcher() {
 
   if (!mounted) return null
 
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark')
+  }
+
   return (
-    <div className="flex gap-4">
-      <Button size="sm" variant="flat" onClick={() => setTheme('light')}>
-        Light
-      </Button>
-      <Button size="sm" variant="flat" onClick={() => setTheme('dark')}>
-        Dark
-      </Button>
-    </div>
+    <Button onClick={toggleTheme} className="min-w-2">
+      {theme === 'dark' ? <RxSun /> : <RxMoon />}
+    </Button>
   )
 }
