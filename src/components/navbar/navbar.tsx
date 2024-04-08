@@ -14,10 +14,13 @@ import {
 } from '@nextui-org/react'
 import { RxGithubLogo } from 'react-icons/rx'
 import ThemeSwitcher from '../ThemeSwitcher'
+import { usePathname } from 'next/navigation'
+
 // import {AcmeLogo} from "./AcmeLogo.jsx";
 
 export default function Nav() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
+  const pathName = usePathname()
 
   const navigation = [
     {
@@ -33,7 +36,7 @@ export default function Nav() {
     {
       name: 'Source',
       link: '#',
-      icon: <RxGithubLogo fontSize="1.4rem" className="ml-2 mt-1" />,
+      icon: <RxGithubLogo fontSize="1.2rem" className="ml-2 mt-1" />,
     },
   ]
 
@@ -73,13 +76,15 @@ export default function Nav() {
       </NavbarContent>
 
       <NavbarContent justify="end">
-        <NavbarItem className="hidden lg:flex">
-          <Button>
-            <Link href="#" color="foreground">
-              Create Group
-            </Link>
-          </Button>
-        </NavbarItem>
+        {pathName === '/' && (
+          <NavbarItem className="hidden lg:flex">
+            <Button>
+              <Link href="#" color="foreground">
+                Create Group
+              </Link>
+            </Button>
+          </NavbarItem>
+        )}
         <NavbarItem>
           <ThemeSwitcher />
         </NavbarItem>
