@@ -196,6 +196,7 @@ export const GroupForm: React.FC<Props> = ({
         type="submit"
         variant="faded"
         isLoading={isSubmitting}
+        onClick={updateActiveUser}
         className="text-base mt-4 text-green-600"
       >
         {group ? <>Save</> : <> Create</>}

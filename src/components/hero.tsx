@@ -1,5 +1,5 @@
 import { NextComponentType } from 'next'
-import { Code, Divider, Link, Snippet } from '@nextui-org/react'
+import { Divider, Link } from '@nextui-org/react'
 import { button as buttonStyles } from '@nextui-org/theme'
 import React from 'react'
 import { subtitle, title } from './primitives'
@@ -22,7 +22,7 @@ const Hero: NextComponentType = () => {
         <div className="flex gap-3">
           <Link
             isExternal
-            href="#"
+            href="/groups/create"
             className={buttonStyles({
               color: 'success',
               radius: 'full',
@@ -34,7 +34,7 @@ const Hero: NextComponentType = () => {
           <Link
             isExternal
             className={buttonStyles({ variant: 'bordered', radius: 'full' })}
-            href="#"
+            href="https://github.com/AnimeshRy"
           >
             <RxGithubLogo size={20} />
             GitHub

@@ -79,7 +79,7 @@ export default function Nav() {
         {pathName === '/' && (
           <NavbarItem className="hidden lg:flex">
             <Button>
-              <Link href="#" color="foreground">
+              <Link href="/groups/create" color="foreground">
                 Create Group
               </Link>
             </Button>
