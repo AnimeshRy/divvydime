@@ -1,9 +1,11 @@
 import { NextComponentType } from 'next'
-import { Divider, Link } from '@nextui-org/react'
+import { Link } from '@nextui-org/react'
 import { button as buttonStyles } from '@nextui-org/theme'
 import React from 'react'
 import { subtitle, title } from './primitives'
+
 import { RxGithubLogo } from 'react-icons/rx'
+import { EXTERNAL_ROUTES, NAVIGATION_ROUTES } from '../app/constants/routes'
 
 const Hero: NextComponentType = () => {
   return (
@@ -21,8 +23,7 @@ const Hero: NextComponentType = () => {
 
         <div className="flex gap-3">
           <Link
-            isExternal
-            href="/groups/create"
+            href={NAVIGATION_ROUTES.CREATE_GROUP}
             className={buttonStyles({
               color: 'success',
               radius: 'full',
@@ -34,14 +35,13 @@ const Hero: NextComponentType = () => {
           <Link
             isExternal
             className={buttonStyles({ variant: 'bordered', radius: 'full' })}
-            href="https://github.com/AnimeshRy"
+            href={EXTERNAL_ROUTES.GITHUB_REPO}
           >
             <RxGithubLogo size={20} />
             GitHub
           </Link>
         </div>
       </section>
-      <Divider />
     </>
   )
 }

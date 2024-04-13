@@ -15,6 +15,7 @@ import {
 import { RxGithubLogo } from 'react-icons/rx'
 import ThemeSwitcher from '../ThemeSwitcher'
 import { usePathname } from 'next/navigation'
+import { NAVIGATION_ROUTES } from '../../app/constants/routes'
 
 // import {AcmeLogo} from "./AcmeLogo.jsx";
 
@@ -79,7 +80,7 @@ export default function Nav() {
         {pathName === '/' && (
           <NavbarItem className="hidden lg:flex">
             <Button>
-              <Link href="/groups/create" color="foreground">
+              <Link href={NAVIGATION_ROUTES.CREATE_GROUP} color="foreground">
                 Create Group
               </Link>
             </Button>
