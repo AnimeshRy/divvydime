@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: 'Recently Visited Groups',
 }
 
-export default async function GroupsPage() {
+export default async function GroupsListing() {
   return (
     <>
       <RecentGroupList />
