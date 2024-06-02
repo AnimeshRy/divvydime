@@ -8,7 +8,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <NextUIProvider>
       <NextThemesProvider
-        defaultTheme="system"
+        defaultTheme="dark"
         attribute="class"
         themes={['dark', 'light', 'system']}
         enableSystem={true}
