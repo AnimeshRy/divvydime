@@ -11,7 +11,4 @@ export const starredGroupsSchema = z.array(z.string())
 export const archivedGroupsSchema = z.array(z.string())
 
 export type RecentGroups = z.infer<typeof recentGroupsSchema>
-
-export function getRecentGroups() {
-    const groupsInStorageJson = localStorage.getItem()
-}
+export type RecentGroup = RecentGroups[number]

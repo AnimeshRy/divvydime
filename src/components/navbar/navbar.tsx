@@ -23,7 +23,7 @@ export default function Nav() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
   const pathName = usePathname()
 
-  const navigation = [
+  const homeNavigation = [
     {
       name: 'Groups',
       link: '#',
@@ -52,28 +52,33 @@ export default function Nav() {
       <NavbarContent className="sm:hidden pr-3" justify="center">
         <NavbarBrand>
           {/* <AcmeLogo /> */}
-          <p className="font-bold text-inherit">DivyDime</p>
+          <Link className="font-bold text-inherit" href="/">
+            DivyDime
+          </Link>
         </NavbarBrand>
       </NavbarContent>
 
       <NavbarContent className="hidden sm:flex gap-6" justify="center">
         <NavbarBrand>
           {/* <AcmeLogo /> */}
-          <p className="font-bold text-inherit">DivyDime</p>
+          <Link className="font-bold text-inherit" href="/">
+            DivyDime
+          </Link>
         </NavbarBrand>
 
-        {navigation.map((item, index) => {
-          return (
-            <NavbarItem key={`${item.name}-${index}`} isActive>
-              <div className="flex">
-                <Link color="foreground" href="#" size="lg">
-                  {item.name}
-                </Link>
-                {item.icon && item.icon}
-              </div>
-            </NavbarItem>
-          )
-        })}
+        {pathName === '/' &&
+          homeNavigation.map((item, index) => {
+            return (
+              <NavbarItem key={`${item.name}-${index}`} isActive>
+                <div className="flex">
+                  <Link color="foreground" href="#" size="lg">
+                    {item.name}
+                  </Link>
+                  {item.icon && item.icon}
+                </div>
+              </NavbarItem>
+            )
+          })}
       </NavbarContent>
 
       <NavbarContent justify="end">
@@ -92,16 +97,17 @@ export default function Nav() {
       </NavbarContent>
 
       <NavbarMenu>
-        {navigation.map((item, index) => (
-          <NavbarMenuItem key={`${item.name}-${index}`}>
-            <div className="flex">
-              <Link className="w-full" href="#" color="foreground" size="lg">
-                {item.name}
-              </Link>
-              {item.icon && item.icon}
-            </div>
-          </NavbarMenuItem>
-        ))}
+        {pathName === '/' &&
+          homeNavigation.map((item, index) => (
+            <NavbarMenuItem key={`${item.name}-${index}`}>
+              <div className="flex">
+                <Link className="w-full" href="#" color="foreground" size="lg">
+                  {item.name}
+                </Link>
+                {item.icon && item.icon}
+              </div>
+            </NavbarMenuItem>
+          ))}
       </NavbarMenu>
     </Navbar>
   )
