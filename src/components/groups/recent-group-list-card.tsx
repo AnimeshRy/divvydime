@@ -1,21 +1,19 @@
-'use client';
 
 import { RecentGroup } from '@/lib/schema-utils';
 import { useRouter } from 'next/navigation';
 import { RecentGroupsState } from '../../app/groups/recent-group-list';
 import { SetStateAction } from 'react';
 import { toast } from 'react-hot-toast';
-import { getArchivedGroups, getStarredGroups } from '@/lib/groups';
+import { archiveGroup, getArchivedGroups, getStarredGroups, starGroup, unarchiveGroup, unstarGroup } from '@/lib/groups';
 import {
   Card,
   CardHeader,
-  Divider,
-  CardBody,
   CardFooter,
   Button,
   Tooltip,
 } from '@nextui-org/react';
 import Link from 'next/link';
+import {RxStar, RxStarFilled, RxArchive, RxPerson} from 'react-icons/rx'
 
 export function RecentGroupListCard({
   group,
@@ -49,68 +47,76 @@ export function RecentGroupListCard({
     <li key={group.id}>
       <Card
         className="max-w-[400px] cursor-pointer"
-        isHoverable
         onClick={() => router.push(`/groups/${group.id}`)}
       >
-        <CardHeader className="flex justify-between items-center">
+        <CardHeader className="flex justify-between items-center pb-0">
           <div>
             <p>{group.name}</p>
           </div>
           <div className="flex gap-2">
             <Tooltip content={isStarred ? 'Unstar' : 'Star'}>
               <Button
+                size="sm"
                 color={isStarred ? 'warning' : 'default'}
                 onClick={(e) => {
                   e.stopPropagation();
                   if (isStarred) {
-                    // Logic for unstar
+                    unstarGroup(group.id);
+                    toast.success('Group unstarred', { duration: 1000 });
                   } else {
-                    // Logic for star
+                      starGroup(group.id);
+                      unarchiveGroup(group.id);
+                      toast.success('Group starred', { duration: 1000 });
                   }
                   refreshGroupsFromStorage();
                 }}
               >
-                {isStarred ? '★' : '☆'}
+                {isStarred ? <RxStarFilled /> : <RxStar />}
               </Button>
             </Tooltip>
             <Tooltip content={isArchived ? 'Unarchive' : 'Archive'}>
               <Button
+                size="sm"
                 color={isArchived ? 'secondary' : 'default'}
                 onClick={(e) => {
                   e.stopPropagation();
                   if (isArchived) {
-                    // Logic for unarchive
+                    unarchiveGroup(group.id);
+                    toast.success('Group unarchived', { duration: 1000 });
                   } else {
-                    // Logic for archive
+                    archiveGroup(group.id);
+                    toast.success('Group archived', { duration: 1000 });
                   }
                   refreshGroupsFromStorage();
                 }}
               >
-                {isArchived ? '📦' : '📥'}
+                {isArchived ? <RxArchive /> :  <RxArchive className="rotate-45" />}
               </Button>
             </Tooltip>
           </div>
         </CardHeader>
-        <Divider />
-        <CardBody>
-          <p>
-            {details
-              ? `Created on: ${new Date(details.createdAt).toLocaleDateString()}`
-              : 'Fetching details...'}
-          </p>
-          <p color="gray">
-            {details
-              ? `Participants: ${details._count.participants}`
-              : 'Loading participants...'}
-          </p>
-        </CardBody>
         <CardFooter>
-          <Link href={`/groups/${group.id}`} passHref>
-            <Button color="primary">
-              View Group
-            </Button>
-          </Link>
-        </CardFooter>
+            {details ? (
+                <Tooltip content="Participants & Creation Date">
+                <div className="flex justify-between w-full">
+                <div className="flex items-center gap-1">
+                    <p>{details._count.participants}</p>
+                    <RxPerson />
+                <p className='text-sm ml-2'>{new Date(details.createdAt).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                    })}</p>
+                </div>
+                </div>
+                </Tooltip>
+            ) : (
+                'Loading details...'
+            )}
+            <Link  className='ml-2' href={`/groups/${group.id}`} passHref>
+                <Button className="text-base mt-4 text-green-600">View Group</Button>
+            </Link>
+            </CardFooter>
       </Card>
     </li>
   );
