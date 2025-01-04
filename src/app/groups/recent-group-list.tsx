@@ -1,7 +1,6 @@
 'use client'
 import { NextPage } from 'next'
 import { getGroupsAction } from './actions'
-import { AddGroupByUrlButton } from '@/components/groups/add-group-by-url'
 import { RecentGroups } from '@/lib/schema-utils'
 import { getGroups } from '@/lib/api'
 import { useEffect, useState } from 'react'
@@ -13,6 +12,7 @@ import {
 import { Loader2 } from 'lucide-react'
 import GroupsPage from '@/components/groups/group-page'
 import { Button, Link } from '@nextui-org/react'
+import GroupList from '@/components/groups/group-listing'
 
 export type RecentGroupsState =
   | {
@@ -100,9 +100,9 @@ const RecentGroupList: NextPage = () => {
         <div className="text-sm space-y-2">
           <p>You have not visited any group recently.</p>
           <p>
-            <Button className="-m-4">
-              <Link href={`/groups/create`}>Create one</Link>
-            </Button>{' '}
+            <Link href={`/groups/create`} className="text-green-600">
+              Create one
+            </Link>{' '}
             or ask a friend to send you the link to an existing one.
           </p>
         </div>

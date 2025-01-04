@@ -1,162 +1,119 @@
-'use client'
+'use client';
+
+import { RecentGroup } from '@/lib/schema-utils';
+import { useRouter } from 'next/navigation';
+import { RecentGroupsState } from '../../app/groups/recent-group-list';
+import { SetStateAction } from 'react';
+import { toast } from 'react-hot-toast';
+import { getArchivedGroups, getStarredGroups } from '@/lib/groups';
+import {
+  Card,
+  CardHeader,
+  Divider,
+  CardBody,
+  CardFooter,
+  Button,
+  Tooltip,
+} from '@nextui-org/react';
+import Link from 'next/link';
 
 export function RecentGroupListCard({
   group,
   state,
   setState,
 }: {
-  group: RecentGroup
-  state: RecentGroupsState
-  setState: (state: SetStateAction<RecentGroupsState>) => void
+  group: RecentGroup;
+  state: RecentGroupsState;
+  setState: (state: SetStateAction<RecentGroupsState>) => void;
 }) {
-  const router = useRouter()
-  const toast = useToast()
+  const router = useRouter();
 
   const details =
     state.status === 'complete'
       ? state.groupsDetails.find((d) => d.id === group.id)
-      : null
+      : null;
 
-  if (state.status === 'pending') return null
+  if (state.status === 'pending') return null;
 
   const refreshGroupsFromStorage = () =>
     setState({
       ...state,
       starredGroups: getStarredGroups(),
       archivedGroups: getArchivedGroups(),
-    })
+    });
 
-  const isStarred = state.starredGroups.includes(group.id)
-  const isArchived = state.archivedGroups.includes(group.id)
+  const isStarred = state.starredGroups.includes(group.id);
+  const isArchived = state.archivedGroups.includes(group.id);
 
   return (
     <li key={group.id}>
-      <Button
-        variant="secondary"
-        className="h-fit w-full py-3 rounded-lg border bg-card shadow-sm"
-        asChild
+      <Card
+        className="max-w-[400px] cursor-pointer"
+        isHoverable
+        onClick={() => router.push(`/groups/${group.id}`)}
       >
-        <div
-          className="text-base"
-          onClick={() => router.push(`/groups/${group.id}`)}
-        >
-          <div className="w-full flex flex-col gap-1">
-            <div className="text-base flex gap-2 justify-between">
-              <Link
-                href={`/groups/${group.id}`}
-                className="flex-1 overflow-hidden text-ellipsis"
-              >
-                {group.name}
-              </Link>
-              <span className="flex-shrink-0">
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="-my-3 -ml-3 -mr-1.5"
-                  onClick={(event) => {
-                    event.stopPropagation()
-                    if (isStarred) {
-                      unstarGroup(group.id)
-                    } else {
-                      starGroup(group.id)
-                      unarchiveGroup(group.id)
-                    }
-                    refreshGroupsFromStorage()
-                  }}
-                >
-                  {isStarred ? (
-                    <StarFilledIcon className="w-4 h-4 text-orange-400" />
-                  ) : (
-                    <Star className="w-4 h-4 text-muted-foreground" />
-                  )}
-                </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="-my-3 -mr-3 -ml-1.5"
-                    >
-                      <MoreHorizontal className="w-4 h-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      className="text-destructive"
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        deleteRecentGroup(group)
-                        setState({
-                          ...state,
-                          groups: state.groups.filter((g) => g.id !== group.id),
-                        })
-                        toast.toast({
-                          title: 'Group has been removed',
-                          description:
-                            'The group was removed from your recent groups list.',
-                          action: (
-                            <ToastAction
-                              altText="Undo group removal"
-                              onClick={() => {
-                                saveRecentGroup(group)
-                                setState({
-                                  ...state,
-                                  groups: state.groups,
-                                })
-                              }}
-                            >
-                              Undo
-                            </ToastAction>
-                          ),
-                        })
-                      }}
-                    >
-                      Remove from recent groups
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        if (isArchived) {
-                          unarchiveGroup(group.id)
-                        } else {
-                          archiveGroup(group.id)
-                          unstarGroup(group.id)
-                        }
-                        refreshGroupsFromStorage()
-                      }}
-                    >
-                      {isArchived ? <>Unarchive group</> : <>Archive group</>}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </span>
-            </div>
-            <div className="text-muted-foreground font-normal text-xs">
-              {details ? (
-                <div className="w-full flex items-center justify-between">
-                  <div className="flex items-center">
-                    <Users className="w-3 h-3 inline mr-1" />
-                    <span>{details._count.participants}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Calendar className="w-3 h-3 inline mx-1" />
-                    <span>
-                      {new Date(details.createdAt).toLocaleDateString('en-US', {
-                        dateStyle: 'medium',
-                      })}
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex justify-between">
-                  <Skeleton className="h-4 w-6 rounded-full" />
-                  <Skeleton className="h-4 w-24 rounded-full" />
-                </div>
-              )}
-            </div>
+        <CardHeader className="flex justify-between items-center">
+          <div>
+            <p>{group.name}</p>
           </div>
-        </div>
-      </Button>
+          <div className="flex gap-2">
+            <Tooltip content={isStarred ? 'Unstar' : 'Star'}>
+              <Button
+                color={isStarred ? 'warning' : 'default'}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (isStarred) {
+                    // Logic for unstar
+                  } else {
+                    // Logic for star
+                  }
+                  refreshGroupsFromStorage();
+                }}
+              >
+                {isStarred ? '★' : '☆'}
+              </Button>
+            </Tooltip>
+            <Tooltip content={isArchived ? 'Unarchive' : 'Archive'}>
+              <Button
+                color={isArchived ? 'secondary' : 'default'}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (isArchived) {
+                    // Logic for unarchive
+                  } else {
+                    // Logic for archive
+                  }
+                  refreshGroupsFromStorage();
+                }}
+              >
+                {isArchived ? '📦' : '📥'}
+              </Button>
+            </Tooltip>
+          </div>
+        </CardHeader>
+        <Divider />
+        <CardBody>
+          <p>
+            {details
+              ? `Created on: ${new Date(details.createdAt).toLocaleDateString()}`
+              : 'Fetching details...'}
+          </p>
+          <p color="gray">
+            {details
+              ? `Participants: ${details._count.participants}`
+              : 'Loading participants...'}
+          </p>
+        </CardBody>
+        <CardFooter>
+          <Link href={`/groups/${group.id}`} passHref>
+            <Button color="primary">
+              View Group
+            </Button>
+          </Link>
+        </CardFooter>
+      </Card>
     </li>
-  )
+  );
 }
+
+export default RecentGroupListCard;

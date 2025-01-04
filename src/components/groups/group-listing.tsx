@@ -1,5 +1,6 @@
 import { RecentGroups } from '@/lib/schema-utils'
 import { SetStateAction } from 'react'
+import RecentGroupListCard from './recent-group-list-card'
 import { RecentGroupsState } from '../../app/groups/recent-group-list'
 
 function GroupList({
@@ -24,3 +25,5 @@ function GroupList({
     </ul>
   )
 }
+
+export default GroupList
