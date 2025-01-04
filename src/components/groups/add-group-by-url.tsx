@@ -1,5 +1,3 @@
-// import { getGroupInfoAction } from '@/app/groups/add-group-by-url-button-actions'
-// import { saveRecentGroup } from '@/app/groups/recent-groups-helpers'
 import {
   Popover,
   PopoverTrigger,
@@ -10,13 +8,14 @@ import {
 import { useMediaQuery } from '@/lib/hooks'
 import { Loader2, Plus } from 'lucide-react'
 import { useState } from 'react'
+import { saveRecentGroup } from '@/lib/groups'
+import { getGroup } from '@/lib/api'
 
 type Props = {
   reload: () => void
 }
 
 export function AddGroupByUrlButton({ reload }: Props) {
-  const isDesktop = useMediaQuery('(min-width: 640px)')
   const [url, setUrl] = useState('')
   const [error, setError] = useState(false)
   const [open, setOpen] = useState(false)
@@ -26,19 +25,13 @@ export function AddGroupByUrlButton({ reload }: Props) {
     <Popover isOpen={open} onOpenChange={setOpen}>
       <PopoverTrigger>
         <Button>
-          {/* <Plus className="w-4 h-4 mr-2" /> */}
           <>Add by URL</>
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        // align={isDesktop ? 'end' : 'start'}
         className="[&_p]:text-sm flex flex-col gap-3"
       >
-        <h3 className="font-bold">Add a group by URL</h3>
-        <p>
-          If a group was shared with you, you can paste its URL here to add it
-          to your list.
-        </p>
+        <h3 className="font-bold">Add Group by URL</h3>
         <form
           className="flex gap-2"
           onSubmit={async (event) => {
@@ -48,12 +41,12 @@ export function AddGroupByUrlButton({ reload }: Props) {
                 new RegExp(`${window.location.origin}/groups/([^/]+)`)
               ) ?? []
             setPending(true)
-            const group = groupId ? await Promise.resolve(groupId) : null
+            const group = groupId ? await getGroup(groupId) : null
             setPending(false)
             if (!group) {
               setError(true)
             } else {
-              //   saveRecentGroup({ id: group.id, name: group.name })
+              saveRecentGroup({ id: group.id, name: group.name })
               reload()
               setUrl('')
               setOpen(false)
@@ -63,7 +56,7 @@ export function AddGroupByUrlButton({ reload }: Props) {
           <Input
             type="url"
             required
-            placeholder="https://spliit.app/..."
+            placeholder="https://dvdime.vercel.app/..."
             className="flex-1 text-base"
             value={url}
             disabled={pending}
@@ -72,11 +65,11 @@ export function AddGroupByUrlButton({ reload }: Props) {
               setError(false)
             }}
           />
-          <Button type="submit" disabled={pending}>
+          <Button size='lg' type="submit" disabled={pending}>
             {pending ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
-              <Plus className="w-4 h-4" />
+              <Plus size={16} />
             )}
           </Button>
         </form>

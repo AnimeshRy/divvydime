@@ -1,7 +1,6 @@
 import { getPrisma } from '@/lib/prisma'
 import { ExpenseFormValues, GroupFormValues } from '@/lib/schema'
 import { Expense } from '@prisma/client'
-import { group } from 'console'
 import { nanoid } from 'nanoid'
 
 export function randomId() {
