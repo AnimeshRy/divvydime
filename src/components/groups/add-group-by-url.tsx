@@ -28,9 +28,7 @@ export function AddGroupByUrlButton({ reload }: Props) {
           <>Add by URL</>
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        className="[&_p]:text-sm flex flex-col gap-3"
-      >
+      <PopoverContent className="[&_p]:text-sm flex flex-col gap-3">
         <h3 className="font-bold">Add Group by URL</h3>
         <form
           className="flex gap-2"
@@ -65,7 +63,7 @@ export function AddGroupByUrlButton({ reload }: Props) {
               setError(false)
             }}
           />
-          <Button size='lg' type="submit" disabled={pending}>
+          <Button size="lg" type="submit" disabled={pending}>
             {pending ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (

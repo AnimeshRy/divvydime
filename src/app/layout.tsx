@@ -21,7 +21,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <Providers>
-        <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+          <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
           <Nav />
           <main>{children}</main>
         </Providers>
