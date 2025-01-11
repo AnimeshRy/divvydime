@@ -5,11 +5,10 @@ import {
   Input,
   Button,
 } from '@nextui-org/react'
-import { useMediaQuery } from '@/lib/hooks'
 import { Loader2, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { saveRecentGroup } from '@/lib/groups'
-import { getGroup } from '@/lib/api'
+import { getGroupInfoAction } from './add-group-by-url-buton-action'
 
 type Props = {
   reload: () => void
@@ -39,7 +38,7 @@ export function AddGroupByUrlButton({ reload }: Props) {
                 new RegExp(`${window.location.origin}/groups/([^/]+)`)
               ) ?? []
             setPending(true)
-            const group = groupId ? await getGroup(groupId) : null
+            const group = groupId ? await getGroupInfoAction(groupId) : null
             setPending(false)
             if (!group) {
               setError(true)
