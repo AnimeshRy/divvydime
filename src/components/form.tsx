@@ -88,14 +88,13 @@ export const GroupForm: React.FC<Props> = ({
   return (
     <form
       onSubmit={form.handleSubmit(async (values) => {
-        console.log(values)
         await onSubmit(values)
       })}
     >
       <Card className="mb-4 mt-5">
         <CardHeader className="flex flex-1 justify-center">
           <h2 className={title({ color: 'green', size: 'sm' })}>
-            Create Group
+            {group ? 'Edit Group Details' : 'Create Group'}
           </h2>
         </CardHeader>
         <h3 className={(subtitle(), 'ml-4')}>Group Information</h3>
@@ -106,6 +105,7 @@ export const GroupForm: React.FC<Props> = ({
             placeholder="Summer vacations"
             description="Enter a name for your group."
             className="text-base"
+            value={form.watch('name')}
             errorMessage={errors.name?.message}
           />
 
@@ -113,8 +113,9 @@ export const GroupForm: React.FC<Props> = ({
             {...form.register('currency')}
             label="Currency symbol"
             placeholder="$, €, £…"
-            description="We’ll use it to display amounts."
+            description="We'll use it to display amounts."
             className="text-base"
+            value={form.watch('currency')}
             errorMessage={errors.currency?.message}
           />
         </CardBody>
@@ -134,9 +135,9 @@ export const GroupForm: React.FC<Props> = ({
                 <div className="flex items-center gap-2">
                   <Input
                     {...form.register(`participants.${index}.name` as const)}
-                    defaultValue={item.name}
                     label={`Participant #${index + 1}`}
                     className="text-base"
+                    value={form.watch(`participants.${index}.name`)}
                     errorMessage={errors.participants?.[index]?.name?.message}
                   />
                   {item.id && protectedParticipantIds.includes(item.id) ? (
@@ -179,6 +180,8 @@ export const GroupForm: React.FC<Props> = ({
               label="Active user"
               placeholder="Select a participant"
               className="max-w-xs p-4"
+              selectedKeys={[activeUser]}
+              onChange={(e) => setActiveUser(e.target.value)}
             >
               {[{ name: 'None' }, ...form.watch('participants')]
                 .filter((item) => item.name.length > 0)

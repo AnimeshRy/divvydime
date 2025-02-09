@@ -107,7 +107,11 @@ export function RecentGroupListCard({
         </CardHeader>
         <CardFooter>
           {details ? (
-            <Tooltip content="Participants & Creation Date">
+            <Tooltip
+              content="Participants & Creation Date"
+              delay={0}
+              closeDelay={0}
+            >
               <div className="flex justify-between w-full">
                 <div className="flex items-center gap-1">
                   <p>{details._count.participants}</p>

@@ -27,7 +27,6 @@ export function GroupTabs({ groupId }: Props) {
     >
       <Tab key="expenses" title="Expenses" />
       <Tab key="balances" title="Balances" />
-      <Tab key="information" title="Information" />
       <Tab key="stats" title="Stats" />
       <Tab key="activity" title="Activity" />
       <Tab key="edit" title="Settings" />
