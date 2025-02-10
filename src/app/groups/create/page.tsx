@@ -1,13 +1,13 @@
 import { NextPage } from 'next'
 import { GroupForm } from '@/components/form'
-import { createGroupFormSchema } from '@/lib/schema'
+import { groupFormSchema } from '@/lib/schema'
 import { createGroup } from '@/lib/api'
 import { redirect } from 'next/navigation'
 
 const CreateGroup: NextPage = () => {
   async function createGroupAction(values: unknown) {
     'use server'
-    const groupFormValues = createGroupFormSchema.parse(values)
+    const groupFormValues = groupFormSchema.parse(values)
     const group = await createGroup(groupFormValues)
     redirect(`/groups/${group.id}`)
   }

@@ -16,7 +16,7 @@ import {
 } from '@nextui-org/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { getGroup } from '@/lib/api'
-import { GroupFormValues, createGroupFormSchema } from '@/lib/schema'
+import { GroupFormValues, groupFormSchema } from '@/lib/schema'
 import { subtitle, title } from './primitives'
 import { RxTrash } from 'react-icons/rx'
 
@@ -32,7 +32,7 @@ export const GroupForm: React.FC<Props> = ({
   protectedParticipantIds = [''],
 }: Props) => {
   const form = useForm<GroupFormValues>({
-    resolver: zodResolver(createGroupFormSchema),
+    resolver: zodResolver(groupFormSchema),
     defaultValues: group
       ? {
           name: group.name,

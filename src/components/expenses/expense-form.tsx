@@ -166,151 +166,152 @@ export function ExpenseForm({
   const sPaid = isIncome ? 'received' : 'paid'
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
-      <Card className="mb-4">
-        <CardHeader>
-          <h4 className="text-xl font-bold">
-            {(isCreate ? 'Create ' : 'Edit ') + sExpense}
-          </h4>
-        </CardHeader>
-        <CardBody className="gap-6">
-          <div className="grid sm:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                {capitalize(sExpense)} title
-              </label>
-              <Input
-                {...form.register('title')}
-                placeholder="Monday evening restaurant"
-                onBlur={async (e) => {
-                  if (runtimeFeatureFlags.enableCategoryExtract) {
-                    setCategoryLoading(true)
-                    const { categoryId } = await extractCategoryFromTitle(
-                      e.target.value,
-                    )
-                    form.setValue('category', categoryId)
-                    setCategoryLoading(false)
-                  }
-                }}
-              />
-              <p className="text-sm text-default-500">
-                Enter a description for the {sExpense}.
-              </p>
-            </div>
+    // <form onSubmit={form.handleSubmit(onSubmit)}>
+    //   <Card className="mb-4">
+    //     <CardHeader>
+    //       <h4 className="text-xl font-bold">
+    //         {(isCreate ? 'Create ' : 'Edit ') + sExpense}
+    //       </h4>
+    //     </CardHeader>
+    //     <CardBody className="gap-6">
+    //       <div className="grid sm:grid-cols-2 gap-6">
+    //         <div className="space-y-2">
+    //           <label className="text-sm font-medium">
+    //             {capitalize(sExpense)} title
+    //           </label>
+    //           <Input
+    //             {...form.register('title')}
+    //             placeholder="Monday evening restaurant"
+    //             onBlur={async (e) => {
+    //               if (runtimeFeatureFlags.enableCategoryExtract) {
+    //                 setCategoryLoading(true)
+    //                 const { categoryId } = await extractCategoryFromTitle(
+    //                   e.target.value,
+    //                 )
+    //                 form.setValue('category', categoryId)
+    //                 setCategoryLoading(false)
+    //               }
+    //             }}
+    //           />
+    //           <p className="text-sm text-default-500">
+    //             Enter a description for the {sExpense}.
+    //           </p>
+    //         </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                {capitalize(sExpense)} date
-              </label>
-              <Input
-                type="date"
-                {...form.register('expenseDate')}
-                defaultValue={formatDate(form.getValues('expenseDate'))}
-              />
-              <p className="text-sm text-default-500">
-                Enter the date the {sExpense} was {sPaid}.
-              </p>
-            </div>
+    //         <div className="space-y-2">
+    //           <label className="text-sm font-medium">
+    //             {capitalize(sExpense)} date
+    //           </label>
+    //           <Input
+    //             type="date"
+    //             {...form.register('expenseDate')}
+    //             defaultValue={formatDate(form.getValues('expenseDate'))}
+    //           />
+    //           <p className="text-sm text-default-500">
+    //             Enter the date the {sExpense} was {sPaid}.
+    //           </p>
+    //         </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Amount</label>
-              <div className="flex items-center gap-2">
-                <span>{group.currency}</span>
-                <Input
-                  className="max-w-[120px]"
-                  {...form.register('amount')}
-                  type="text"
-                  inputMode="decimal"
-                  placeholder="0.00"
-                  onChange={(e) => {
-                    const v = enforceCurrencyPattern(e.target.value)
-                    const income = Number(v) < 0
-                    setIsIncome(income)
-                    if (income) form.setValue('isReimbursement', false)
-                    form.setValue('amount', v as unknown as number)
-                  }}
-                />
-              </div>
-              {!isIncome && (
-                <div className="flex items-center gap-2 mt-2">
-                  <Checkbox
-                    {...form.register('isReimbursement')}
-                    defaultSelected={form.getValues('isReimbursement')}
-                  >
-                    This is a reimbursement
-                  </Checkbox>
-                </div>
-              )}
-            </div>
+    //         <div className="space-y-2">
+    //           <label className="text-sm font-medium">Amount</label>
+    //           <div className="flex items-center gap-2">
+    //             <span>{group.currency}</span>
+    //             <Input
+    //               className="max-w-[120px]"
+    //               {...form.register('amount')}
+    //               type="text"
+    //               inputMode="decimal"
+    //               placeholder="0.00"
+    //               onChange={(e) => {
+    //                 const v = enforceCurrencyPattern(e.target.value)
+    //                 const income = Number(v) < 0
+    //                 setIsIncome(income)
+    //                 if (income) form.setValue('isReimbursement', false)
+    //                 form.setValue('amount', v as unknown as number)
+    //               }}
+    //             />
+    //           </div>
+    //           {!isIncome && (
+    //             <div className="flex items-center gap-2 mt-2">
+    //               <Checkbox
+    //                 {...form.register('isReimbursement')}
+    //                 defaultSelected={form.getValues('isReimbursement')}
+    //               >
+    //                 This is a reimbursement
+    //               </Checkbox>
+    //             </div>
+    //           )}
+    //         </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Category</label>
-              <CategorySelector
-                categories={categories}
-                defaultValue={form.getValues('category')}
-                onValueChange={(value) => form.setValue('category', value)}
-                isLoading={isCategoryLoading}
-              />
-              <p className="text-sm text-default-500">
-                Select the {sExpense} category.
-              </p>
-            </div>
+    //         <div className="space-y-2">
+    //           <label className="text-sm font-medium">Category</label>
+    //           <CategorySelector
+    //             categories={categories}
+    //             defaultValue={form.getValues('category')}
+    //             onValueChange={(value) => form.setValue('category', value)}
+    //             isLoading={isCategoryLoading}
+    //           />
+    //           <p className="text-sm text-default-500">
+    //             Select the {sExpense} category.
+    //           </p>
+    //         </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">{capitalize(sPaid)} by</label>
-              <Select
-                defaultSelectedKeys={[getSelectedPayer() || '']}
-                onChange={(e) => form.setValue('paidBy', e.target.value)}
-              >
-                {group.participants.map(({ id, name }) => (
-                  <SelectItem key={id} value={id}>
-                    {name}
-                  </SelectItem>
-                ))}
-              </Select>
-              <p className="text-sm text-default-500">
-                Select the participant who {sPaid} the {sExpense}.
-              </p>
-            </div>
+    //         <div className="space-y-2">
+    //           <label className="text-sm font-medium">{capitalize(sPaid)} by</label>
+    //           <Select
+    //             defaultSelectedKeys={[getSelectedPayer() || '']}
+    //             onChange={(e) => form.setValue('paidBy', e.target.value)}
+    //           >
+    //             {group.participants.map(({ id, name }) => (
+    //               <SelectItem key={id} value={id}>
+    //                 {name}
+    //               </SelectItem>
+    //             ))}
+    //           </Select>
+    //           <p className="text-sm text-default-500">
+    //             Select the participant who {sPaid} the {sExpense}.
+    //           </p>
+    //         </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Notes</label>
-              <Textarea
-                {...form.register('notes')}
-                placeholder="Add any additional notes..."
-              />
-            </div>
-          </div>
-        </CardBody>
-      </Card>
+    //         <div className="space-y-2">
+    //           <label className="text-sm font-medium">Notes</label>
+    //           <Textarea
+    //             {...form.register('notes')}
+    //             placeholder="Add any additional notes..."
+    //           />
+    //         </div>
+    //       </div>
+    //     </CardBody>
+    //   </Card>
 
-      <div className="flex gap-2 mt-4">
-        <Button
-          color="primary"
-          type="submit"
-          startContent={<Save className="w-4 h-4" />}
-        >
-          {isCreate ? 'Create' : 'Save'}
-        </Button>
-        {!isCreate && onDelete && (
-          <Button
-            color="danger"
-            variant="flat"
-            onClick={() => onDelete(activeUserId ?? undefined)}
-          >
-            Delete
-          </Button>
-        )}
-        <Button
-          as={Link}
-          href={`/groups/${group.id}`}
-          variant="flat"
-          color="default"
-        >
-          Cancel
-        </Button>
-      </div>
-    </form>
+    //   <div className="flex gap-2 mt-4">
+    //     <Button
+    //       color="primary"
+    //       type="submit"
+    //       startContent={<Save className="w-4 h-4" />}
+    //     >
+    //       {isCreate ? 'Create' : 'Save'}
+    //     </Button>
+    //     {!isCreate && onDelete && (
+    //       <Button
+    //         color="danger"
+    //         variant="flat"
+    //         onClick={() => onDelete(activeUserId ?? undefined)}
+    //       >
+    //         Delete
+    //       </Button>
+    //     )}
+    //     <Button
+    //       as={Link}
+    //       href={`/groups/${group.id}`}
+    //       variant="flat"
+    //       color="default"
+    //     >
+    //       Cancel
+    //     </Button>
+    //   </div>
+    // </form>
+    <></>
   )
 }
 

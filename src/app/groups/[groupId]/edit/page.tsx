@@ -1,7 +1,7 @@
 import { cached } from '@/app/cached-functions'
 import { GroupForm } from '@/components/form'
 import { getGroupExpensesParticipants, updateGroup } from '@/lib/api'
-import { createGroupFormSchema } from '@/lib/schema'
+import { groupFormSchema } from '@/lib/schema'
 import { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 
@@ -19,7 +19,7 @@ export default async function EditGroupPage({
 
   async function updateGroupAction(values: unknown, participantId?: string) {
     'use server'
-    const groupFormValues = createGroupFormSchema.parse(values)
+    const groupFormValues = groupFormSchema.parse(values)
     const group = await updateGroup(groupId, groupFormValues, participantId)
     redirect(`/groups/${group.id}`)
   }
