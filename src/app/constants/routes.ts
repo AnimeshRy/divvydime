@@ -1,5 +1,6 @@
 enum NAVIGATION_ROUTES {
   CREATE_GROUP = '/groups/create',
+  LIST_GROUPS = '/groups',
 }
 
 enum EXTERNAL_ROUTES {

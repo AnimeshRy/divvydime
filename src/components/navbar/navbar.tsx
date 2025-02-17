@@ -15,7 +15,7 @@ import {
 import { RxGithubLogo } from 'react-icons/rx'
 import ThemeSwitcher from '../ThemeSwitcher'
 import { usePathname } from 'next/navigation'
-import { NAVIGATION_ROUTES } from '../../app/constants/routes'
+import { EXTERNAL_ROUTES, NAVIGATION_ROUTES } from '../../app/constants/routes'
 
 // import {AcmeLogo} from "./AcmeLogo.jsx";
 
@@ -26,7 +26,7 @@ export default function Nav() {
   const homeNavigation = [
     {
       name: 'Groups',
-      link: '#',
+      link: NAVIGATION_ROUTES.LIST_GROUPS,
       icon: false,
     },
     {
@@ -36,7 +36,7 @@ export default function Nav() {
     },
     {
       name: 'Source',
-      link: '#',
+      link: EXTERNAL_ROUTES.GITHUB_REPO,
       icon: <RxGithubLogo fontSize="1.2rem" className="ml-2 mt-1" />,
     },
   ]
@@ -71,7 +71,7 @@ export default function Nav() {
             return (
               <NavbarItem key={`${item.name}-${index}`} isActive>
                 <div className="flex">
-                  <Link color="foreground" href="#" size="lg">
+                  <Link color="foreground" href={item.link} size="lg">
                     {item.name}
                   </Link>
                   {item.icon && item.icon}
@@ -101,7 +101,7 @@ export default function Nav() {
           homeNavigation.map((item, index) => (
             <NavbarMenuItem key={`${item.name}-${index}`}>
               <div className="flex">
-                <Link className="w-full" href="#" color="foreground" size="lg">
+                <Link className="w-full" href={item.link} color="foreground" size="lg">
                   {item.name}
                 </Link>
                 {item.icon && item.icon}
