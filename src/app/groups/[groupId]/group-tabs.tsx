@@ -22,8 +22,9 @@ export function GroupTabs({ groupId }: Props) {
         }
       }}
       aria-label="Group Tabs"
-      variant="bordered"
+      variant="solid"
       className="overflow-x-auto"
+      color="success"
     >
       <Tab key="expenses" title="Expenses" />
       <Tab key="balances" title="Balances" />

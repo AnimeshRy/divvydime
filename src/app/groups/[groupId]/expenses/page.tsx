@@ -40,16 +40,14 @@ export default async function GroupExpensesPage({
   return (
     <>
       <Card className="mb-4 sm:mx-0">
-        <div className="flex flex-1">
-          <CardHeader className="flex-1 p-4 sm:p-6">
-            <div className="flex flex-col gap-1">
-              <h4 className="text-xl font-bold">Expenses</h4>
-              <p className="text-sm text-default-500">
-                Here are the expenses that you created for your group.
-              </p>
-            </div>
-          </CardHeader>
-          <CardHeader className="p-4 sm:p-6 flex flex-row items-center gap-2">
+        <CardHeader className="flex justify-between items-center p-4 sm:p-6">
+          <div className="flex flex-col gap-1">
+            <h4 className="text-xl font-bold">Expenses</h4>
+            <p className="text-sm text-default-500">
+              Track and manage all expenses shared within your group. Add new expenses or export data as needed.
+            </p>
+          </div>
+          <div className="flex flex-row gap-2">
             <Button
               isIconOnly
               variant="flat"
@@ -60,24 +58,17 @@ export default async function GroupExpensesPage({
             >
               <Download className="w-4 h-4" />
             </Button>
-            {/* {env.NEXT_PUBLIC_ENABLE_RECEIPT_EXTRACT && (
-              <CreateFromReceiptButton
-                groupId={groupId}
-                groupCurrency={group.currency}
-                categories={categories}
-              />
-            )} */}
             <Button
               isIconOnly
-              color="primary"
+              color="success"
               as={Link}
               href={`/groups/${groupId}/expenses/create`}
               title="Create expense"
             >
               <Plus className="w-4 h-4" />
             </Button>
-          </CardHeader>
-        </div>
+          </div>
+        </CardHeader>
 
         <CardBody className="px-0 pt-2 pb-4 sm:pb-6 flex flex-col gap-4 relative">
           <Suspense
@@ -120,12 +111,12 @@ async function Expenses({ group }: Props) {
 
   return (
     <></>
-    // <ExpenseList
-    //   expensesFirstPage={expenses}
-    //   expenseCount={expenseCount}
-    //   groupId={group.id}
-    //   currency={group.currency}
-    //   participants={group.participants}
+    //   <ExpenseList
+    //     expensesFirstPage={expenses}
+    //     expenseCount={expenseCount}
+    //     groupId={group.id}
+    //     currency={group.currency}
+    //     participants={group.participants}
     // />
   )
 }

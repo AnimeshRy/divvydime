@@ -28,6 +28,9 @@ import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { extractCategoryFromTitle } from '../expense-form-actions'
+import {Calendar} from "@nextui-org/calendar";
+
+type SplitMode = 'EVENLY' | 'BY_SHARES' | 'BY_PERCENTAGE' | 'BY_AMOUNT'
 
 export type Props = {
   group: NonNullable<Awaited<ReturnType<typeof getGroup>>>
@@ -161,157 +164,357 @@ export function ExpenseForm({
   const [isCategoryLoading, setCategoryLoading] = useState(false)
   const activeUserId = useActiveUser(group.id)
   const [isIncome, setIsIncome] = useState(Number(form.getValues().amount) < 0)
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false)
 
-  const sExpense = isIncome ? 'income' : 'expense'
-  const sPaid = isIncome ? 'received' : 'paid'
+  const sExpense = isIncome ? 'Income' : 'Expense'
+  const sPaid = isIncome ? 'Received' : 'Paid'
+
+  // Watch for split mode changes
+  const currentSplitMode = form.watch('splitMode')
+
+  const handleSubmit = form.handleSubmit(async (data) => {
+    await onSubmit(data, activeUserId ?? undefined)
+  })
+
+  const handleDelete = async () => {
+    if (onDelete) {
+      await onDelete(activeUserId ?? undefined)
+    }
+  }
 
   return (
-    // <form onSubmit={form.handleSubmit(onSubmit)}>
-    //   <Card className="mb-4">
-    //     <CardHeader>
-    //       <h4 className="text-xl font-bold">
-    //         {(isCreate ? 'Create ' : 'Edit ') + sExpense}
-    //       </h4>
-    //     </CardHeader>
-    //     <CardBody className="gap-6">
-    //       <div className="grid sm:grid-cols-2 gap-6">
-    //         <div className="space-y-2">
-    //           <label className="text-sm font-medium">
-    //             {capitalize(sExpense)} title
-    //           </label>
-    //           <Input
-    //             {...form.register('title')}
-    //             placeholder="Monday evening restaurant"
-    //             onBlur={async (e) => {
-    //               if (runtimeFeatureFlags.enableCategoryExtract) {
-    //                 setCategoryLoading(true)
-    //                 const { categoryId } = await extractCategoryFromTitle(
-    //                   e.target.value,
-    //                 )
-    //                 form.setValue('category', categoryId)
-    //                 setCategoryLoading(false)
-    //               }
-    //             }}
-    //           />
-    //           <p className="text-sm text-default-500">
-    //             Enter a description for the {sExpense}.
-    //           </p>
-    //         </div>
+    <form onSubmit={handleSubmit} className="w-full max-w-4xl mx-auto">
+      <Card className="mb-4">
+        <CardHeader>
+          <h4 className="text-xl font-bold">
+            {(isCreate ? 'Create ' : 'Edit ') + sExpense + ' 💸'}
+          </h4>
+        </CardHeader>
+        <CardBody className="gap-6">
+          <div className="grid sm:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label htmlFor="title" className="text-sm font-medium">
+                Title
+              </label>
+              <Input
+                id="title"
+                {...form.register('title')}
+                placeholder="Monday evening restaurant"
+                aria-label={`${capitalize(sExpense)} title`}
+                onBlur={async (e: React.FocusEvent<HTMLInputElement>) => {
+                  if (runtimeFeatureFlags.enableCategoryExtract) {
+                    setCategoryLoading(true)
+                    const { categoryId } = await extractCategoryFromTitle(
+                      e.target.value,
+                    )
+                    form.setValue('category', categoryId)
+                    setCategoryLoading(false)
+                  }
+                }}
+              />
+              <p className="text-sm text-default-500">
+                Enter a description for the {sExpense}.
+              </p>
+            </div>
 
-    //         <div className="space-y-2">
-    //           <label className="text-sm font-medium">
-    //             {capitalize(sExpense)} date
-    //           </label>
-    //           <Input
-    //             type="date"
-    //             {...form.register('expenseDate')}
-    //             defaultValue={formatDate(form.getValues('expenseDate'))}
-    //           />
-    //           <p className="text-sm text-default-500">
-    //             Enter the date the {sExpense} was {sPaid}.
-    //           </p>
-    //         </div>
+            <div className="space-y-2">
+              <label htmlFor="expenseDate" className="text-sm font-medium">
+                {capitalize(sExpense)} date
+              </label>
+              <Calendar
+                id="expenseDate"
+                value={form.getValues('expenseDate')}
+                onChange={(date) => form.setValue('expenseDate', date)}
+                aria-label={`${capitalize(sExpense)} date`}
+                defaultValue={formatDate(form.getValues('expenseDate'))}
+                className="w-full"
+              />
+              <p className="text-sm text-default-500">
+                Enter the date the {sExpense} was {sPaid}.
+              </p>
+            </div>
 
-    //         <div className="space-y-2">
-    //           <label className="text-sm font-medium">Amount</label>
-    //           <div className="flex items-center gap-2">
-    //             <span>{group.currency}</span>
-    //             <Input
-    //               className="max-w-[120px]"
-    //               {...form.register('amount')}
-    //               type="text"
-    //               inputMode="decimal"
-    //               placeholder="0.00"
-    //               onChange={(e) => {
-    //                 const v = enforceCurrencyPattern(e.target.value)
-    //                 const income = Number(v) < 0
-    //                 setIsIncome(income)
-    //                 if (income) form.setValue('isReimbursement', false)
-    //                 form.setValue('amount', v as unknown as number)
-    //               }}
-    //             />
-    //           </div>
-    //           {!isIncome && (
-    //             <div className="flex items-center gap-2 mt-2">
-    //               <Checkbox
-    //                 {...form.register('isReimbursement')}
-    //                 defaultSelected={form.getValues('isReimbursement')}
-    //               >
-    //                 This is a reimbursement
-    //               </Checkbox>
-    //             </div>
-    //           )}
-    //         </div>
+            <div className="space-y-2">
+              <label htmlFor="category" className="text-sm font-medium">
+                Category
+              </label>
+              <CategorySelector
+                categories={categories}
+                defaultValue={form.getValues('category')}
+                onValueChange={(value) => form.setValue('category', value)}
+                isLoading={isCategoryLoading}
+              />
+              <p className="text-sm text-default-500">
+                Select the {sExpense} category.
+              </p>
+            </div>
 
-    //         <div className="space-y-2">
-    //           <label className="text-sm font-medium">Category</label>
-    //           <CategorySelector
-    //             categories={categories}
-    //             defaultValue={form.getValues('category')}
-    //             onValueChange={(value) => form.setValue('category', value)}
-    //             isLoading={isCategoryLoading}
-    //           />
-    //           <p className="text-sm text-default-500">
-    //             Select the {sExpense} category.
-    //           </p>
-    //         </div>
+            <div className="space-y-2">
+              <label htmlFor="amount" className="text-sm font-medium">
+                Amount
+              </label>
+              <div className="flex items-center gap-2">
+                <span className="text-default-500">{group.currency}</span>
+                <Input
+                  id="amount"
+                  className="flex-1"
+                  {...form.register('amount')}
+                  type="text"
+                  inputMode="decimal"
+                  placeholder="0.00"
+                  aria-label="Amount"
+                  onChange={(e) => {
+                    const v = enforceCurrencyPattern(e.target.value)
+                    const income = Number(v) < 0
+                    setIsIncome(income)
+                    if (income) form.setValue('isReimbursement', false)
+                    form.setValue('amount', v as unknown as number)
+                  }}
+                />
+              </div>
+              <p className="text-sm text-default-500">
+                Enter the {sExpense} amount.
+              </p>
+            </div>
 
-    //         <div className="space-y-2">
-    //           <label className="text-sm font-medium">{capitalize(sPaid)} by</label>
-    //           <Select
-    //             defaultSelectedKeys={[getSelectedPayer() || '']}
-    //             onChange={(e) => form.setValue('paidBy', e.target.value)}
-    //           >
-    //             {group.participants.map(({ id, name }) => (
-    //               <SelectItem key={id} value={id}>
-    //                 {name}
-    //               </SelectItem>
-    //             ))}
-    //           </Select>
-    //           <p className="text-sm text-default-500">
-    //             Select the participant who {sPaid} the {sExpense}.
-    //           </p>
-    //         </div>
+            <div className="space-y-2">
+              <label htmlFor="paidBy" className="text-sm font-medium">
+                {capitalize(sPaid)} by
+              </label>
+              <Select
+                id="paidBy"
+                defaultSelectedKeys={[getSelectedPayer() || '']}
+                placeholder="Select a participant"
+                onSelectionChange={(keys) => {
+                  const selectedKey = Array.from(keys)[0] as string
+                  form.setValue('paidBy', selectedKey)
+                }}
+                aria-label={`${capitalize(sPaid)} by`}
+              >
+                {group.participants.map(({ id, name }) => (
+                  <SelectItem key={id} value={id}>
+                    {name}
+                  </SelectItem>
+                ))}
+              </Select>
+              <p className="text-sm text-default-500">
+                Select the participant who {sPaid} the {sExpense}.
+              </p>
+            </div>
 
-    //         <div className="space-y-2">
-    //           <label className="text-sm font-medium">Notes</label>
-    //           <Textarea
-    //             {...form.register('notes')}
-    //             placeholder="Add any additional notes..."
-    //           />
-    //         </div>
-    //       </div>
-    //     </CardBody>
-    //   </Card>
+            <div className="space-y-2">
+              <label htmlFor="notes" className="text-sm font-medium">
+                Notes
+              </label>
+              <Textarea
+                id="notes"
+                minRows={2}
+                {...form.register('notes')}
+                placeholder="Add any additional notes..."
+                aria-label="Notes"
+              />
+            </div>
 
-    //   <div className="flex gap-2 mt-4">
-    //     <Button
-    //       color="primary"
-    //       type="submit"
-    //       startContent={<Save className="w-4 h-4" />}
-    //     >
-    //       {isCreate ? 'Create' : 'Save'}
-    //     </Button>
-    //     {!isCreate && onDelete && (
-    //       <Button
-    //         color="danger"
-    //         variant="flat"
-    //         onClick={() => onDelete(activeUserId ?? undefined)}
-    //       >
-    //         Delete
-    //       </Button>
-    //     )}
-    //     <Button
-    //       as={Link}
-    //       href={`/groups/${group.id}`}
-    //       variant="flat"
-    //       color="default"
-    //     >
-    //       Cancel
-    //     </Button>
-    //   </div>
-    // </form>
-    <></>
+            {!isIncome && (
+              <div className="col-span-2 flex items-center">
+                <Checkbox
+                  id="isReimbursement"
+                  color="success"
+                  {...form.register('isReimbursement')}
+                  defaultSelected={form.getValues('isReimbursement')}
+                >
+                  This is a reimbursement
+                </Checkbox>
+              </div>
+            )}
+          </div>
+
+          {/* Split Payment Section */}
+          <div className="mt-6 border-t border-divider pt-6">
+            <h5 className="text-lg font-semibold mb-4">Split Payment</h5>
+
+            <div className="space-y-1">
+              {group.participants.map(({ id, name }) => {
+                const isChecked = form.getValues().paidFor?.some(
+                  ({ participant }) => participant === id
+                )
+                return (
+                  <div
+                    key={id}
+                    className="flex items-center justify-between py-3 border-b border-divider last:border-none"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Checkbox
+                        id={`participant-${id}`}
+                        defaultSelected={isChecked}
+                        color="success"
+                        classNames={{
+                          label: "text-sm"
+                        }}
+                        onChange={(e) => {
+                          const currentValue = form.getValues().paidFor || []
+                          if (e.target.checked) {
+                            form.setValue(
+                              'paidFor',
+                              [
+                                ...currentValue,
+                                {
+                                  participant: id,
+                                  shares: 1,
+                                },
+                              ],
+                              { shouldValidate: true }
+                            )
+                          } else {
+                            form.setValue(
+                              'paidFor',
+                              currentValue.filter((value) => value.participant !== id),
+                              { shouldValidate: true }
+                            )
+                          }
+                        }}
+                      >
+                        {name}
+                      </Checkbox>
+                    </div>
+
+                    {currentSplitMode !== 'EVENLY' && (
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="text"
+                          className="w-[80px]"
+                          size="sm"
+                          disabled={!isChecked}
+                          value={String(
+                            form.getValues().paidFor?.find(
+                              ({ participant }) => participant === id
+                            )?.shares || ''
+                          )}
+                          onChange={(e) => {
+                            const currentValue = form.getValues().paidFor || []
+                            form.setValue(
+                              'paidFor',
+                              currentValue.map((p) =>
+                                p.participant === id
+                                  ? {
+                                      participant: id,
+                                      shares: Number(enforceCurrencyPattern(e.target.value)),
+                                    }
+                                  : p
+                              ),
+                              { shouldValidate: true }
+                            )
+                          }}
+                          placeholder={
+                            currentSplitMode === 'BY_AMOUNT'
+                              ? '0.00'
+                              : '1'
+                          }
+                        />
+                        <span className="text-sm text-default-500">
+                          {currentSplitMode === 'BY_SHARES' && 'shares'}
+                          {currentSplitMode === 'BY_PERCENTAGE' && '%'}
+                          {currentSplitMode === 'BY_AMOUNT' && group.currency}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+
+            <div className="mt-2">
+              <Button
+                variant="light"
+                color="success"
+                onPress={() => setShowAdvancedOptions(!showAdvancedOptions)}
+                className="p-3"
+              >
+                Advanced Options
+              </Button>
+
+              {showAdvancedOptions && (
+                <div className="grid sm:grid-cols-2 gap-6 mt-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Split Mode</label>
+                    <Select
+                      defaultSelectedKeys={[form.getValues().splitMode]}
+                      onSelectionChange={(keys) => {
+                        const selectedKey = Array.from(keys)[0] as SplitMode
+                        form.setValue('splitMode', selectedKey, {
+                          shouldValidate: true,
+                        })
+                      }}
+                    >
+                      <SelectItem key="EVENLY" value="EVENLY">
+                        Split Evenly
+                      </SelectItem>
+                      <SelectItem key="BY_SHARES" value="BY_SHARES">
+                        Split by Shares
+                      </SelectItem>
+                      <SelectItem key="BY_PERCENTAGE" value="BY_PERCENTAGE">
+                        Split by Percentage
+                      </SelectItem>
+                      <SelectItem key="BY_AMOUNT" value="BY_AMOUNT">
+                        Split by Amount
+                      </SelectItem>
+                    </Select>
+                    <p className="text-sm text-default-500">
+                      Choose how to split the {sExpense.toLowerCase()}
+                    </p>
+                    <div className="flex items-start pt-2">
+                      <Checkbox
+                        defaultSelected={form.getValues().saveDefaultSplittingOptions}
+                        color="success"
+                        classNames={{
+                          label: "text-sm"
+                        }}
+                        onChange={(e) => {
+                          form.setValue('saveDefaultSplittingOptions', e.target.checked)
+                        }}
+                      >
+                        Save as default split option
+                      </Checkbox>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex gap-2 mt-6 pt-4 border-t border-divider">
+            <Button
+              color="success"
+              type="submit"
+              variant="flat"
+              startContent={<Save className="w-4 h-4" />}
+              aria-label={isCreate ? 'Create expense' : 'Save changes'}
+            >
+              {isCreate ? 'Create' : 'Save'}
+            </Button>
+            {!isCreate && onDelete && (
+              <Button
+                color="danger"
+                variant="flat"
+                onClick={handleDelete}
+                aria-label="Delete expense"
+              >
+                Delete
+              </Button>
+            )}
+            <Button
+              as={Link}
+              href={`/groups/${group.id}`}
+              variant="flat"
+              color="default"
+              aria-label="Cancel and return to group"
+            >
+              Cancel
+            </Button>
+          </div>
+        </CardBody>
+      </Card>
+    </form>
   )
 }
 

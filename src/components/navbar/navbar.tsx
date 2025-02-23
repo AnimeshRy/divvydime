@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import {
   Navbar,
   NavbarBrand,
@@ -51,7 +52,13 @@ export default function Nav() {
 
       <NavbarContent className="sm:hidden pr-3" justify="center">
         <NavbarBrand>
-          {/* <AcmeLogo /> */}
+          <Image
+            src="/logo-logo.png"
+            alt="DivyDime Logo"
+            width={32}
+            height={32}
+            className="mr-4"
+          />
           <Link className="font-bold text-inherit" href="/">
             DivyDime
           </Link>
@@ -60,29 +67,34 @@ export default function Nav() {
 
       <NavbarContent className="hidden sm:flex gap-6" justify="center">
         <NavbarBrand>
-          {/* <AcmeLogo /> */}
+          <Image
+            src="/logo-logo.png"
+            alt="DivyDime Logo"
+            width={32}
+            height={32}
+            className="mr-2"
+          />
           <Link className="font-bold text-inherit" href="/">
             DivyDime
           </Link>
         </NavbarBrand>
 
-        {pathName === '/' &&
-          homeNavigation.map((item, index) => {
-            return (
-              <NavbarItem key={`${item.name}-${index}`} isActive>
-                <div className="flex">
-                  <Link color="foreground" href={item.link} size="lg">
-                    {item.name}
-                  </Link>
-                  {item.icon && item.icon}
-                </div>
-              </NavbarItem>
-            )
-          })}
+        {homeNavigation.map((item, index) => {
+          return (
+            <NavbarItem key={`${item.name}-${index}`} isActive>
+              <div className="flex">
+                <Link color="foreground" href={item.link} size="lg">
+                  {item.name}
+                </Link>
+                {item.icon && item.icon}
+              </div>
+            </NavbarItem>
+          )
+        })}
       </NavbarContent>
 
       <NavbarContent justify="end">
-        {pathName === '/' && (
+        {pathName !== NAVIGATION_ROUTES.CREATE_GROUP && (
           <NavbarItem className="hidden lg:flex">
             <Button>
               <Link href={NAVIGATION_ROUTES.CREATE_GROUP} color="foreground">
