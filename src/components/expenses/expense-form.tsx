@@ -28,7 +28,7 @@ import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { extractCategoryFromTitle } from '../expense-form-actions'
-import {Calendar} from "@nextui-org/calendar";
+// import {Calendar} from "@nextui-org/calendar";
 
 type SplitMode = 'EVENLY' | 'BY_SHARES' | 'BY_PERCENTAGE' | 'BY_AMOUNT'
 
@@ -201,16 +201,6 @@ export function ExpenseForm({
                 {...form.register('title')}
                 placeholder="Monday evening restaurant"
                 aria-label={`${capitalize(sExpense)} title`}
-                onBlur={async (e: React.FocusEvent<HTMLInputElement>) => {
-                  if (runtimeFeatureFlags.enableCategoryExtract) {
-                    setCategoryLoading(true)
-                    const { categoryId } = await extractCategoryFromTitle(
-                      e.target.value,
-                    )
-                    form.setValue('category', categoryId)
-                    setCategoryLoading(false)
-                  }
-                }}
               />
               <p className="text-sm text-default-500">
                 Enter a description for the {sExpense}.
@@ -221,10 +211,10 @@ export function ExpenseForm({
               <label htmlFor="expenseDate" className="text-sm font-medium">
                 {capitalize(sExpense)} date
               </label>
-              <Calendar
+              <Input
                 id="expenseDate"
-                value={form.getValues('expenseDate')}
-                onChange={(date) => form.setValue('expenseDate', date)}
+                type="date"
+                {...form.register('expenseDate')}
                 aria-label={`${capitalize(sExpense)} date`}
                 defaultValue={formatDate(form.getValues('expenseDate'))}
                 className="w-full"

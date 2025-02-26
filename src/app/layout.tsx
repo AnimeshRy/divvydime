@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import Providers from './providers'
 import Nav from '@/components/navbar/navbar'
+import Footer from '@/components/Footer'
 import { Toaster } from 'react-hot-toast'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -27,9 +28,12 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <Providers>
-          <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
-          <Nav />
-          <main>{children}</main>
+          <div className="flex flex-col min-h-screen">
+            <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+            <Nav />
+            <main className="flex-grow">{children}</main>
+            <Footer />
+          </div>
         </Providers>
       </body>
     </html>
