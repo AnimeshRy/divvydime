@@ -1,5 +1,5 @@
 import { cached } from '@/app/cached-functions'
-import { GroupForm } from '@/components/form'
+import { GroupForm } from '@/components/group-form'
 import { getGroupExpensesParticipants, updateGroup } from '@/lib/api'
 import { groupFormSchema } from '@/lib/schema'
 import { Metadata } from 'next'

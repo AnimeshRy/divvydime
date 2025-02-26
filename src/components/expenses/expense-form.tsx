@@ -64,11 +64,11 @@ const getDefaultSplittingOptions = (group: Props['group']) => {
 
   if (typeof localStorage === 'undefined') return defaultValue
   const defaultSplitMode = localStorage.getItem(
-    `${group.id}-defaultSplittingOptions`,
+    `${group.id}-defaultSplittingOptions`
   )
   if (defaultSplitMode === null) return defaultValue
   const parsedDefaultSplitMode = JSON.parse(
-    defaultSplitMode,
+    defaultSplitMode
   ) as SplittingOptions
 
   if (parsedDefaultSplitMode.paidFor === null) {
@@ -133,32 +133,55 @@ export function ExpenseForm({
           documents: expense.documents,
           notes: expense.notes ?? '',
         }
-      : {
-          title: searchParams.get('title') ?? '',
-          expenseDate: searchParams.get('date')
-            ? new Date(searchParams.get('date') as string)
-            : new Date(),
-          amount: (searchParams.get('amount') || 0) as unknown as number,
-          category: searchParams.get('categoryId')
-            ? Number(searchParams.get('categoryId'))
-            : 0,
-          paidFor: defaultSplittingOptions.paidFor,
-          paidBy: getSelectedPayer(),
-          isReimbursement: false,
-          splitMode: defaultSplittingOptions.splitMode,
-          saveDefaultSplittingOptions: false,
-          documents: searchParams.get('imageUrl')
-            ? [
-                {
-                  id: randomId(),
-                  url: searchParams.get('imageUrl') as string,
-                  width: Number(searchParams.get('imageWidth')),
-                  height: Number(searchParams.get('imageHeight')),
-                },
-              ]
-            : [],
-          notes: '',
-        },
+      : searchParams.get('reimbursement')
+        ? {
+            title: 'Reimbursement',
+            expenseDate: new Date(),
+            amount: String(
+              (Number(searchParams.get('amount')) || 0) / 100
+            ) as unknown as number, // hack
+            category: 1, // category with Id 1 is Payment
+            paidBy: searchParams.get('from') ?? undefined,
+            paidFor: [
+              searchParams.get('to')
+                ? {
+                    participant: searchParams.get('to')!,
+                    shares: '1' as unknown as number,
+                  }
+                : undefined,
+            ],
+            isReimbursement: true,
+            splitMode: defaultSplittingOptions.splitMode,
+            saveDefaultSplittingOptions: false,
+            documents: [],
+            notes: '',
+          }
+        : {
+            title: searchParams.get('title') ?? '',
+            expenseDate: searchParams.get('date')
+              ? new Date(searchParams.get('date') as string)
+              : new Date(),
+            amount: (searchParams.get('amount') || 0) as unknown as number,
+            category: searchParams.get('categoryId')
+              ? Number(searchParams.get('categoryId'))
+              : 1,
+            paidFor: defaultSplittingOptions.paidFor,
+            paidBy: getSelectedPayer(),
+            isReimbursement: false,
+            splitMode: defaultSplittingOptions.splitMode,
+            saveDefaultSplittingOptions: false,
+            documents: searchParams.get('imageUrl')
+              ? [
+                  {
+                    id: randomId(),
+                    url: searchParams.get('imageUrl') as string,
+                    width: Number(searchParams.get('imageWidth')),
+                    height: Number(searchParams.get('imageHeight')),
+                  },
+                ]
+              : [],
+            notes: '',
+          },
   })
 
   const [isCategoryLoading, setCategoryLoading] = useState(false)
@@ -200,6 +223,7 @@ export function ExpenseForm({
                 id="title"
                 {...form.register('title')}
                 placeholder="Monday evening restaurant"
+                value={form.watch('title')}
                 aria-label={`${capitalize(sExpense)} title`}
               />
               <p className="text-sm text-default-500">
@@ -214,9 +238,11 @@ export function ExpenseForm({
               <Input
                 id="expenseDate"
                 type="date"
-                {...form.register('expenseDate')}
+                {...form.register('expenseDate', {
+                  setValueAs: (value) =>
+                    value ? new Date(value).toISOString().split('T')[0] : '',
+                })}
                 aria-label={`${capitalize(sExpense)} date`}
-                defaultValue={formatDate(form.getValues('expenseDate'))}
                 className="w-full"
               />
               <p className="text-sm text-default-500">
@@ -231,7 +257,10 @@ export function ExpenseForm({
               <CategorySelector
                 categories={categories}
                 defaultValue={form.getValues('category')}
-                onValueChange={(value) => form.setValue('category', value)}
+                onValueChange={(value) => {
+                  console.log('value', value)
+                  form.setValue('category', value)
+                }}
                 isLoading={isCategoryLoading}
               />
               <p className="text-sm text-default-500">
@@ -325,9 +354,9 @@ export function ExpenseForm({
 
             <div className="space-y-1">
               {group.participants.map(({ id, name }) => {
-                const isChecked = form.getValues().paidFor?.some(
-                  ({ participant }) => participant === id
-                )
+                const isChecked = form
+                  .getValues()
+                  .paidFor?.some(({ participant }) => participant === id)
                 return (
                   <div
                     key={id}
@@ -339,7 +368,7 @@ export function ExpenseForm({
                         defaultSelected={isChecked}
                         color="success"
                         classNames={{
-                          label: "text-sm"
+                          label: 'text-sm',
                         }}
                         onChange={(e) => {
                           const currentValue = form.getValues().paidFor || []
@@ -358,7 +387,9 @@ export function ExpenseForm({
                           } else {
                             form.setValue(
                               'paidFor',
-                              currentValue.filter((value) => value.participant !== id),
+                              currentValue.filter(
+                                (value) => value.participant !== id
+                              ),
                               { shouldValidate: true }
                             )
                           }
@@ -376,9 +407,11 @@ export function ExpenseForm({
                           size="sm"
                           disabled={!isChecked}
                           value={String(
-                            form.getValues().paidFor?.find(
-                              ({ participant }) => participant === id
-                            )?.shares || ''
+                            form
+                              .getValues()
+                              .paidFor?.find(
+                                ({ participant }) => participant === id
+                              )?.shares || ''
                           )}
                           onChange={(e) => {
                             const currentValue = form.getValues().paidFor || []
@@ -388,7 +421,9 @@ export function ExpenseForm({
                                 p.participant === id
                                   ? {
                                       participant: id,
-                                      shares: Number(enforceCurrencyPattern(e.target.value)),
+                                      shares: Number(
+                                        enforceCurrencyPattern(e.target.value)
+                                      ),
                                     }
                                   : p
                               ),
@@ -396,9 +431,7 @@ export function ExpenseForm({
                             )
                           }}
                           placeholder={
-                            currentSplitMode === 'BY_AMOUNT'
-                              ? '0.00'
-                              : '1'
+                            currentSplitMode === 'BY_AMOUNT' ? '0.00' : '1'
                           }
                         />
                         <span className="text-sm text-default-500">
@@ -454,13 +487,18 @@ export function ExpenseForm({
                     </p>
                     <div className="flex items-start pt-2">
                       <Checkbox
-                        defaultSelected={form.getValues().saveDefaultSplittingOptions}
+                        defaultSelected={
+                          form.getValues().saveDefaultSplittingOptions
+                        }
                         color="success"
                         classNames={{
-                          label: "text-sm"
+                          label: 'text-sm',
                         }}
                         onChange={(e) => {
-                          form.setValue('saveDefaultSplittingOptions', e.target.checked)
+                          form.setValue(
+                            'saveDefaultSplittingOptions',
+                            e.target.checked
+                          )
                         }}
                       >
                         Save as default split option

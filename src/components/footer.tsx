@@ -14,7 +14,7 @@ const Footer = () => {
     {
       title: 'Product',
       links: [
-        { name: 'Features', href: '#' },
+        { name: 'Features', href: NAVIGATION_ROUTES.FEATURES },
         { name: 'Groups', href: NAVIGATION_ROUTES.LIST_GROUPS },
         { name: 'Create Group', href: NAVIGATION_ROUTES.CREATE_GROUP },
       ],
@@ -22,17 +22,9 @@ const Footer = () => {
     {
       title: 'Resources',
       links: [
-        { name: 'Documentation', href: '#' },
-        { name: 'Help Center', href: '#' },
-        { name: 'Privacy Policy', href: '#' },
-      ],
-    },
-    {
-      title: 'Company',
-      links: [
-        { name: 'About Us', href: '#' },
-        { name: 'Contact', href: '#' },
-        { name: 'Careers', href: '#' },
+        { name: 'Github', href: EXTERNAL_ROUTES.GITHUB_REPO },
+        { name: 'Support', href: 'mailto:psingh.animesh@gmail.com' },
+        { name: 'Privacy Policy', href: NAVIGATION_ROUTES.PRIVACY_POLICY },
       ],
     },
   ]
@@ -41,17 +33,17 @@ const Footer = () => {
     {
       name: 'GitHub',
       href: EXTERNAL_ROUTES.GITHUB_REPO,
-      icon: <RxGithubLogo className="text-xl" aria-hidden="true" />
+      icon: <RxGithubLogo className="text-xl" aria-hidden="true" />,
     },
     {
       name: 'Twitter',
-      href: '#',
-      icon: <FaXTwitter className="text-xl" aria-hidden="true" />
+      href: EXTERNAL_ROUTES.TWITTER,
+      icon: <FaXTwitter className="text-xl" aria-hidden="true" />,
     },
     {
-      name: 'LinkedIn',
-      href: '#',
-      icon: <FaLinkedin className="text-xl" aria-hidden="true" />
+      name: 'Say Hello!',
+      href: EXTERNAL_ROUTES.PORTFOLIO,
+      icon: <FaLinkedin className="text-xl" aria-hidden="true" />,
     },
   ]
 
@@ -80,8 +72,8 @@ const Footer = () => {
               <span className="font-bold text-lg">DivyDime</span>
             </div>
             <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md">
-              DivyDime helps you split expenses with friends and family.
-              Track group expenses, settle debts, and manage your finances together.
+              DivyDime helps you split expenses with friends and family. Track
+              group expenses, settle debts, and manage your finances together.
             </p>
             <div className="flex space-x-4 mt-4">
               {socialLinks.map((social) => (
@@ -130,26 +122,30 @@ const Footer = () => {
             </p>
             <div className="mt-4 md:mt-0 flex space-x-4">
               <Link
-                href="#"
+                href={NAVIGATION_ROUTES.TERMS_OF_SERVICE}
                 className="text-xs text-gray-500 hover:text-primary transition-colors"
                 tabIndex={0}
-                onKeyDown={(e) => handleKeyDown(e, '#')}
+                onKeyDown={(e) =>
+                  handleKeyDown(e, NAVIGATION_ROUTES.TERMS_OF_SERVICE)
+                }
               >
                 Terms of Service
               </Link>
               <Link
-                href="#"
+                href={NAVIGATION_ROUTES.PRIVACY_POLICY}
                 className="text-xs text-gray-500 hover:text-primary transition-colors"
                 tabIndex={0}
-                onKeyDown={(e) => handleKeyDown(e, '#')}
+                onKeyDown={(e) =>
+                  handleKeyDown(e, NAVIGATION_ROUTES.PRIVACY_POLICY)
+                }
               >
                 Privacy Policy
               </Link>
               <Link
-                href="#"
+                href={NAVIGATION_ROUTES.COOKIES}
                 className="text-xs text-gray-500 hover:text-primary transition-colors"
                 tabIndex={0}
-                onKeyDown={(e) => handleKeyDown(e, '#')}
+                onKeyDown={(e) => handleKeyDown(e, NAVIGATION_ROUTES.COOKIES)}
               >
                 Cookies
               </Link>

@@ -43,7 +43,7 @@ export function CategorySelector({
       ...acc,
       [category.grouping]: [...(acc[category.grouping] ?? []), category],
     }),
-    {},
+    {}
   )
 
   const filteredCategories = Object.entries(categoriesByGroup).reduce<
@@ -52,7 +52,7 @@ export function CategorySelector({
     const filtered = cats.filter(
       (cat) =>
         cat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        group.toLowerCase().includes(searchQuery.toLowerCase()),
+        group.toLowerCase().includes(searchQuery.toLowerCase())
     )
     if (filtered.length > 0) {
       acc[group] = filtered
@@ -108,29 +108,31 @@ export function CategorySelector({
           />
         </div>
         <ScrollShadow className="max-h-[300px]">
-          {Object.entries(filteredCategories).map(([group, groupCategories]) => (
-            <div key={group}>
-              <div className="px-2 py-1.5 text-sm font-semibold text-default-600 bg-default-100">
-                {group}
+          {Object.entries(filteredCategories).map(
+            ([group, groupCategories]) => (
+              <div key={group}>
+                <div className="px-2 py-1.5 text-sm font-semibold text-default-600 bg-default-100">
+                  {group}
+                </div>
+                <div className="p-1">
+                  {groupCategories.map((category) => (
+                    <Button
+                      key={category.id}
+                      variant="light"
+                      className="w-full justify-start mb-1"
+                      onClick={() => {
+                        setValue(category.id)
+                        onValueChange(category.id)
+                        setOpen(false)
+                      }}
+                    >
+                      <CategoryLabel category={category} />
+                    </Button>
+                  ))}
+                </div>
               </div>
-              <div className="p-1">
-                {groupCategories.map((category) => (
-                  <Button
-                    key={category.id}
-                    variant="light"
-                    className="w-full justify-start mb-1"
-                    onClick={() => {
-                      setValue(category.id)
-                      onValueChange(category.id)
-                      setOpen(false)
-                    }}
-                  >
-                    <CategoryLabel category={category} />
-                  </Button>
-                ))}
-              </div>
-            </div>
-          ))}
+            )
+          )}
           {Object.keys(filteredCategories).length === 0 && (
             <div className="p-2 text-center text-default-500">
               No category found.

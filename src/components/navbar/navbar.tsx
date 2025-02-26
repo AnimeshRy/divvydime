@@ -18,8 +18,6 @@ import ThemeSwitcher from '../ThemeSwitcher'
 import { usePathname } from 'next/navigation'
 import { EXTERNAL_ROUTES, NAVIGATION_ROUTES } from '../../app/constants/routes'
 
-// import {AcmeLogo} from "./AcmeLogo.jsx";
-
 export default function Nav() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
   const pathName = usePathname()
@@ -32,7 +30,7 @@ export default function Nav() {
     },
     {
       name: 'Features',
-      link: '#',
+      link: NAVIGATION_ROUTES.FEATURES,
       icon: false,
     },
     {
@@ -113,7 +111,12 @@ export default function Nav() {
           homeNavigation.map((item, index) => (
             <NavbarMenuItem key={`${item.name}-${index}`}>
               <div className="flex">
-                <Link className="w-full" href={item.link} color="foreground" size="lg">
+                <Link
+                  className="w-full"
+                  href={item.link}
+                  color="foreground"
+                  size="lg"
+                >
                   {item.name}
                 </Link>
                 {item.icon && item.icon}

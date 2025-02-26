@@ -2,13 +2,7 @@ import { cached } from '@/app/cached-functions'
 // import { ActiveUserModal } from '@/app/groups/[groupId]/expenses/active-user-modal'
 // import { CreateFromReceiptButton } from '@/app/groups/[groupId]/expenses/create-from-receipt-button'
 // import { ExpenseList } from '@/app/groups/[groupId]/expenses/expense-list'
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  Button,
-  Skeleton,
-} from '@nextui-org/react'
+import { Card, CardHeader, CardBody, Button, Skeleton } from '@nextui-org/react'
 import {
   getCategories,
   getGroupExpenseCount,
@@ -20,6 +14,7 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
+import { ExpenseList } from './expense-list'
 
 export const revalidate = 3600
 
@@ -44,7 +39,8 @@ export default async function GroupExpensesPage({
           <div className="flex flex-col gap-1">
             <h4 className="text-xl font-bold">Expenses</h4>
             <p className="text-sm text-default-500">
-              Track and manage all expenses shared within your group. Add new expenses or export data as needed.
+              Track and manage all expenses shared within your group. Add new
+              expenses or export data as needed.
             </p>
           </div>
           <div className="flex flex-row gap-2">
@@ -110,13 +106,12 @@ async function Expenses({ group }: Props) {
   })
 
   return (
-    <></>
-    //   <ExpenseList
-    //     expensesFirstPage={expenses}
-    //     expenseCount={expenseCount}
-    //     groupId={group.id}
-    //     currency={group.currency}
-    //     participants={group.participants}
-    // />
+    <ExpenseList
+      expensesFirstPage={expenses}
+      expenseCount={expenseCount}
+      groupId={group.id}
+      currency={group.currency}
+      participants={group.participants}
+    />
   )
 }

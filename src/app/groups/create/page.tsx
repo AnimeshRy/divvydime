@@ -1,5 +1,5 @@
 import { NextPage } from 'next'
-import { GroupForm } from '@/components/form'
+import { GroupForm } from '@/components/group-form'
 import { groupFormSchema } from '@/lib/schema'
 import { createGroup } from '@/lib/api'
 import { redirect } from 'next/navigation'

@@ -16,8 +16,7 @@ const GroupsPage = ({
         <div className="flex gap-2">
           <AddGroupByUrlButton reload={reload} />
           <Button>
-            <Link href="/groups/create">Create
-            </Link>
+            <Link href="/groups/create">Create</Link>
           </Button>
         </div>
       </div>

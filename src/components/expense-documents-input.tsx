@@ -27,15 +27,17 @@ export function ExpenseDocumentsInput({ documents, updateDocuments }: Props) {
   const [pending, setPending] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0]
     if (!file) return
 
     if (file.size > MAX_FILE_SIZE) {
       alert(
         `The maximum file size you can upload is ${formatFileSize(
-          MAX_FILE_SIZE,
-        )}. Yours is ${formatFileSize(file.size)}.`,
+          MAX_FILE_SIZE
+        )}. Yours is ${formatFileSize(file.size)}.`
       )
       return
     }
@@ -154,8 +156,8 @@ function DocumentThumbnail({
         size="full"
         scrollBehavior="inside"
         classNames={{
-          base: "p-4",
-          body: "p-0",
+          base: 'p-4',
+          body: 'p-0',
         }}
       >
         <ModalContent>

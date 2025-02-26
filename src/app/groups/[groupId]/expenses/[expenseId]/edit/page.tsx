@@ -1,6 +1,11 @@
 import { cached } from '@/app/cached-functions'
 import { ExpenseForm } from '@/components/expenses/expense-form'
-import { createExpense, getCategories } from '@/lib/api'
+import {
+  deleteExpense,
+  getCategories,
+  getExpense,
+  updateExpense,
+} from '@/lib/api'
 import { getRuntimeFeatureFlags } from '@/lib/feature-flags'
 import { expenseFormSchema } from '@/lib/schema'
 import { Metadata } from 'next'
@@ -8,23 +13,30 @@ import { notFound, redirect } from 'next/navigation'
 import { Suspense } from 'react'
 
 export const metadata: Metadata = {
-  title: 'Create expense',
+  title: 'Edit expense',
 }
 
-export default async function ExpensePage({
-  params: { groupId },
+export default async function EditExpensePage({
+  params: { groupId, expenseId },
 }: {
-  params: { groupId: string }
+  params: { groupId: string; expenseId: string }
 }) {
   const categories = await getCategories()
   const group = await cached.getGroup(groupId)
   if (!group) notFound()
+  const expense = await getExpense(groupId, expenseId)
+  if (!expense) notFound()
 
-  async function createExpenseAction(values: unknown, participantId?: string) {
+  async function updateExpenseAction(values: unknown, participantId?: string) {
     'use server'
     const expenseFormValues = expenseFormSchema.parse(values)
-    console.log(expenseFormValues)
-    await createExpense(expenseFormValues, groupId, participantId)
+    await updateExpense(groupId, expenseId, expenseFormValues, participantId)
+    redirect(`/groups/${groupId}`)
+  }
+
+  async function deleteExpenseAction(participantId?: string) {
+    'use server'
+    await deleteExpense(groupId, expenseId, participantId)
     redirect(`/groups/${groupId}`)
   }
 
@@ -32,8 +44,10 @@ export default async function ExpensePage({
     <Suspense>
       <ExpenseForm
         group={group}
+        expense={expense}
         categories={categories}
-        onSubmit={createExpenseAction}
+        onSubmit={updateExpenseAction}
+        onDelete={deleteExpenseAction}
         runtimeFeatureFlags={await getRuntimeFeatureFlags()}
       />
     </Suspense>
