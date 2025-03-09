@@ -192,6 +192,8 @@ export function ExpenseForm({
   const sExpense = isIncome ? 'Income' : 'Expense'
   const sPaid = isIncome ? 'Received' : 'Paid'
 
+  console.log('form.watch("paidFor")', form.watch('paidFor'))
+
   // Watch for split mode changes
   const currentSplitMode = form.watch('splitMode')
 
@@ -208,10 +210,20 @@ export function ExpenseForm({
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-4xl mx-auto">
       <Card className="mb-4">
-        <CardHeader>
+        <CardHeader className="flex justify-between items-center">
           <h4 className="text-xl font-bold">
             {(isCreate ? 'Create ' : 'Edit ') + sExpense + ' 💸'}
           </h4>
+          {!isCreate && onDelete && (
+              <Button
+                color="danger"
+                variant="flat"
+                onClick={handleDelete}
+                aria-label="Delete expense"
+              >
+                Delete Expense
+              </Button>
+            )}
         </CardHeader>
         <CardBody className="gap-6">
           <div className="grid sm:grid-cols-2 gap-6">
@@ -238,6 +250,7 @@ export function ExpenseForm({
               <Input
                 id="expenseDate"
                 type="date"
+                value={form.watch('expenseDate')?.toString() || ''}
                 {...form.register('expenseDate', {
                   setValueAs: (value) =>
                     value ? new Date(value).toISOString().split('T')[0] : '',
@@ -282,6 +295,7 @@ export function ExpenseForm({
                   inputMode="decimal"
                   placeholder="0.00"
                   aria-label="Amount"
+                  value={form.watch('amount').toString()}
                   onChange={(e) => {
                     const v = enforceCurrencyPattern(e.target.value)
                     const income = Number(v) < 0
@@ -304,6 +318,7 @@ export function ExpenseForm({
                 id="paidBy"
                 defaultSelectedKeys={[getSelectedPayer() || '']}
                 placeholder="Select a participant"
+                selectedKeys={[form.watch('paidBy') || '']}
                 onSelectionChange={(keys) => {
                   const selectedKey = Array.from(keys)[0] as string
                   form.setValue('paidBy', selectedKey)
@@ -328,6 +343,7 @@ export function ExpenseForm({
               <Textarea
                 id="notes"
                 minRows={2}
+                value={form.watch('notes')}
                 {...form.register('notes')}
                 placeholder="Add any additional notes..."
                 aria-label="Notes"
@@ -340,9 +356,9 @@ export function ExpenseForm({
                   id="isReimbursement"
                   color="success"
                   {...form.register('isReimbursement')}
-                  defaultSelected={form.getValues('isReimbursement')}
+                  isSelected={form.watch('isReimbursement')}
                 >
-                  This is a reimbursement
+                  Is a Reimbursement?
                 </Checkbox>
               </div>
             )}
@@ -407,28 +423,36 @@ export function ExpenseForm({
                           size="sm"
                           disabled={!isChecked}
                           value={String(
-                            form
-                              .getValues()
-                              .paidFor?.find(
-                                ({ participant }) => participant === id
-                              )?.shares || ''
+                            form.watch('paidFor')?.find(
+                              ({ participant }) => participant === id
+                            )?.shares || ''
                           )}
                           onChange={(e) => {
-                            const currentValue = form.getValues().paidFor || []
-                            form.setValue(
-                              'paidFor',
-                              currentValue.map((p) =>
-                                p.participant === id
-                                  ? {
-                                      participant: id,
-                                      shares: Number(
-                                        enforceCurrencyPattern(e.target.value)
-                                      ),
-                                    }
-                                  : p
-                              ),
-                              { shouldValidate: true }
-                            )
+                            const newValue = enforceCurrencyPattern(e.target.value);
+                            const currentPaidFor = [...(form.getValues().paidFor || [])];
+
+                            // Find if this participant already exists in the array
+                            const existingIndex = currentPaidFor.findIndex(
+                              p => p.participant === id
+                            );
+
+                            if (existingIndex >= 0) {
+                              // Update existing entry
+                              currentPaidFor[existingIndex] = {
+                                participant: id,
+                                shares: Number(newValue),
+                              };
+                            } else {
+                              // Add new entry
+                              currentPaidFor.push({
+                                participant: id,
+                                shares: Number(newValue),
+                              });
+                            }
+
+                            form.setValue('paidFor', currentPaidFor, {
+                              shouldValidate: true
+                            });
                           }}
                           placeholder={
                             currentSplitMode === 'BY_AMOUNT' ? '0.00' : '1'
@@ -487,9 +511,7 @@ export function ExpenseForm({
                     </p>
                     <div className="flex items-start pt-2">
                       <Checkbox
-                        defaultSelected={
-                          form.getValues().saveDefaultSplittingOptions
-                        }
+                        isSelected={form.watch('saveDefaultSplittingOptions')}
                         color="success"
                         classNames={{
                           label: 'text-sm',
@@ -520,16 +542,7 @@ export function ExpenseForm({
             >
               {isCreate ? 'Create' : 'Save'}
             </Button>
-            {!isCreate && onDelete && (
-              <Button
-                color="danger"
-                variant="flat"
-                onClick={handleDelete}
-                aria-label="Delete expense"
-              >
-                Delete
-              </Button>
-            )}
+
             <Button
               as={Link}
               href={`/groups/${group.id}`}

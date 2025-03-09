@@ -23,7 +23,6 @@ export default async function ExpensePage({
   async function createExpenseAction(values: unknown, participantId?: string) {
     'use server'
     const expenseFormValues = expenseFormSchema.parse(values)
-    console.log(expenseFormValues)
     await createExpense(expenseFormValues, groupId, participantId)
     redirect(`/groups/${groupId}`)
   }

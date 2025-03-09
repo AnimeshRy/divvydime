@@ -325,6 +325,7 @@ export default async function BalancesPage({
   if (!group) notFound()
 
   const expenses = await getGroupExpenses(groupId)
+  console.log('expenses', expenses)
   const balances = getBalances(expenses)
   const reimbursements = getSuggestedReimbursements(balances)
   const publicBalances = getPublicBalances(reimbursements)

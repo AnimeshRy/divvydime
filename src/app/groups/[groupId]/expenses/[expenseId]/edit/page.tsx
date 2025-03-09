@@ -30,6 +30,7 @@ export default async function EditExpensePage({
   async function updateExpenseAction(values: unknown, participantId?: string) {
     'use server'
     const expenseFormValues = expenseFormSchema.parse(values)
+    console.log('sdasdasd', expenseFormValues)
     await updateExpense(groupId, expenseId, expenseFormValues, participantId)
     redirect(`/groups/${groupId}`)
   }

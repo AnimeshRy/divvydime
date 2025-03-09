@@ -27,16 +27,19 @@ export default function Nav() {
       name: 'Groups',
       link: NAVIGATION_ROUTES.LIST_GROUPS,
       icon: false,
+      showOnHomePageOnly: false,
     },
     {
       name: 'Features',
       link: NAVIGATION_ROUTES.FEATURES,
       icon: false,
+      showOnHomePageOnly: true,
     },
     {
       name: 'Source',
       link: EXTERNAL_ROUTES.GITHUB_REPO,
       icon: <RxGithubLogo fontSize="1.2rem" className="ml-2 mt-1" />,
+      showOnHomePageOnly: false,
     },
   ]
 
@@ -78,6 +81,9 @@ export default function Nav() {
         </NavbarBrand>
 
         {homeNavigation.map((item, index) => {
+          if (pathName !== '/' && item.showOnHomePageOnly) {
+            return null
+          }
           return (
             <NavbarItem key={`${item.name}-${index}`} isActive>
               <div className="flex">

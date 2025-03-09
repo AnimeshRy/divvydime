@@ -9,9 +9,6 @@ import {
   Card,
   CardBody,
   Chip,
-  Tooltip,
-  Avatar,
-  Divider,
 } from '@nextui-org/react'
 import { normalizeString } from '@/lib/utils'
 import { Participant } from '@prisma/client'

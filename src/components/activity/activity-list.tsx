@@ -47,10 +47,10 @@ function getGroupedActivitiesByDate(activities: Activity[]) {
   const today = dayjs()
   return activities.reduce(
     (result: { [key: string]: Activity[] }, activity: Activity) => {
-      const activityGroup = getDateGroup(dayjs(activity.time), today)
-      result[activityGroup] = result[activityGroup] ?? []
-      result[activityGroup].push(activity)
-      return result
+        const activityGroup = getDateGroup(dayjs(activity.time), today)
+        result[activityGroup] = result[activityGroup] ?? []
+        result[activityGroup].push(activity)
+        return result
     },
     {}
   )

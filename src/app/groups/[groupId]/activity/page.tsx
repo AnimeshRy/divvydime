@@ -1,7 +1,7 @@
 import { cached } from '@/app/cached-functions'
 import { ActivityList } from '@/components/activity/activity-list'
 import { Card, CardBody, CardHeader, Divider, Spinner } from '@nextui-org/react'
-import { getActivities, getGroupExpenses } from '@/lib/api'
+import { getActivities } from '@/lib/api'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
@@ -45,8 +45,6 @@ function ActivityLoading() {
 
 async function ActivityContent({ groupId }: { groupId: string }) {
   const activities = await getActivities(groupId)
-  const expenses = await getGroupExpenses(groupId)
-  const group = await cached.getGroup(groupId)
 
   if (activities.length === 0) {
     return <p className="text-center py-8">No activities found</p>
